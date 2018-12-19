@@ -1,0 +1,29 @@
+
+management:
+  info:
+    git:
+      mode: "full"
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: my.eins.InputChannel
+        output:
+          destination: my.eins.OutputChannel
+      default-binder: local_rabbit
+      binders:
+        local_rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost
+                port: 5672
+        
