@@ -44,11 +44,17 @@ dependencies {
 	testImplementation('org.springframework.security:spring-security-test')
 }
 
+ext['dockerhubUser'] = 'dhoffi'
 docker {
     springBootApplication {
         baseImage = 'openjdk:8-alpine'
         ports = [8080]
-        tag = 'funkeeins:0.1.0'
+        tag = project.ext.dockerhubUser + '/funkeeins:0.1.1'
+        registryCredentials {
+            url = 'https://index.docker.io/v1/'
+            username = project.ext.dockerhubUser
+            password = "<password>"
+        }
     }
 }
 
