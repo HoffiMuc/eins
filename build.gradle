@@ -18,8 +18,14 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.bmuschko.docker-spring-boot-application'
 
+ext {
+    versionBase = '0.1.1'
+    springCloudVersion = 'Greenwich.RC1'
+    dockerhubUser = 'dhoffi' + '/'
+}
+
 group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+version = project.ext.versionBase+'.SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
@@ -27,8 +33,6 @@ repositories {
     jcenter()
 	maven { url "https://repo.spring.io/milestone" }
 }
-
-ext['springCloudVersion'] = 'Greenwich.RC1'
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -44,17 +48,32 @@ dependencies {
 	testImplementation('org.springframework.security:spring-security-test')
 }
 
-ext['dockerhubUser'] = 'dhoffi'
 docker {
     springBootApplication {
         baseImage = 'openjdk:8-alpine'
         ports = [8080]
-        tag = project.ext.dockerhubUser + '/funkeeins:0.1.1'
+        tag = project.ext.dockerhubUser + 'funke' + project.name +':' + project.versionBase
         registryCredentials {
             url = 'https://index.docker.io/v1/'
             username = project.ext.dockerhubUser
             password = "<password>"
         }
+    }
+}
+
+task printDockerRunCmds(group:project.group, description:"print docker run commands to console") {
+    doLast {
+        def dockerRunCmdsString = """
+docker network create mynetwork
+
+# RabbitMQ
+docker run -d -p 5672:5672 -p 15672:15672 --network mynetwork --hostname my-rabbit --name some-rabbit rabbitmq:3.7.8-management-alpine
+
+# ${project.name}
+docker run -d -p 8081:8080                --network mynetwork --hostname eins      --name funke-${project.name} ${project.dockerhubUser}funke${project.name}:${project.versionBase}
+
+"""
+        println dockerRunCmdsString
     }
 }
 
