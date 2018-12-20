@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 management:
   info:
@@ -27,3 +28,49 @@ spring:
                 host: 192.168.99.100
                 port: 5672
         
+=======
+
+management:
+  info:
+    git:
+      mode: "full"
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: my.eins.InputChannel
+        output:
+          destination: my.eins.OutputChannel
+      default-binder: local_rabbit
+      binders:
+        local_rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost
+                port: 5672
+
+---
+
+spring:
+  profiles: vm
+  cloud:
+    stream:
+      default-binder: local_rabbit
+      binders:
+        local_rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: 0.0.0.0
+                port: 5672
+>>>>>>> branch 'master' of https://github.com/HoffiMuc/eins
