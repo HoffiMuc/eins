@@ -26,4 +26,19 @@ spring:
               rabbitmq:
                 host: localhost
                 port: 5672
-        
+
+---
+
+spring:
+  profiles: vm
+  cloud:
+    stream:
+      default-binder: local_rabbit
+      binders:
+        local_rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: 0.0.0.0
+                port: 5672
