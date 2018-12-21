@@ -12,10 +12,14 @@ spring:
   cloud:
     stream:
       bindings:
-        input:
-          destination: my.eins.InputChannel
-        output:
-          destination: my.eins.OutputChannel
+        fromOutsideChannel: # INPUT
+          destination: my.fromOutsideChannel
+          group: einsInputGroup
+          contentType: text/plain
+        eins2zweiChannel: # OUTPUT
+          destination: my.eins2zweiChannel # matching INPUT of receiver
+          contentType: text/plain
+          
       default-binder: local_rabbit
       binders:
         local_rabbit:

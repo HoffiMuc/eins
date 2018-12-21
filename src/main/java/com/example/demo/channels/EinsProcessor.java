@@ -7,8 +7,8 @@ import org.springframework.messaging.SubscribableChannel;
 
 public interface EinsProcessor {
 
-    String INPUT = "einsInputDef";
-    String OUTPUT = "einsOutputDef";
+    String INPUT = "fromOutsideChannel";
+    String OUTPUT = "eins2zweiChannel";
 
     @Input(INPUT)
     SubscribableChannel einsInput();
