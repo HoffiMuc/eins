@@ -1,0 +1,8 @@
+<configuration>
+    <appender name="map" class="com.example.testhelpers.LogMapAppender"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender"/>
+    <root level="info">
+        <appender-ref ref="map"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

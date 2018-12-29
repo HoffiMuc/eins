@@ -1,15 +1,14 @@
 buildscript {
-	ext {
-		springBootVersion = '2.1.1.RELEASE'
-	}
-	repositories {
-		mavenCentral()
+    ext { springBootVersion = '2.1.1.RELEASE' }
+    repositories {
+        mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "com.bmuschko:gradle-docker-plugin:4.2.0"
- 	}
+        classpath "org.yaml:snakeyaml:1.23" // https://bitbucket.org/asomov/snakeyaml/wiki/Documentation
+    }
 }
 
 apply plugin: 'java'
@@ -21,41 +20,55 @@ apply plugin: 'com.bmuschko.docker-spring-boot-application'
 ext {
     versionBase = '0.1.2'
     springCloudVersion = 'Greenwich.RC1'
-    dockerhubUser = 'dhoffi' + '/'
+    springProfilesActive = System.env.SPRING_PROFILES_ACTIVE == null ? ["default"]: System.env.SPRING_PROFILES_ACTIVE.split(',')
+
+    dockerRegistryUrl = 'https://index.docker.io/v1/'
+    dockerRegistryUser = 'dhoffi'
+    dockerTag = project.ext.dockerRegistryUser + (project.ext.dockerRegistryUser == "" ? "" : "/") + project.name +':' + project.ext.versionBase
+    dockerNetwork = 'mynetwork'
 }
+// after ext { }
+apply from: "buildSpringConfig.gradle"
+apply from: "buildVscode.gradle"
 
 group = 'com.example'
 version = project.ext.versionBase+'.SNAPSHOT'
-sourceCompatibility = 1.8
+//sourceCompatibility = 1.8
+project.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
-	mavenCentral()
+    mavenCentral()
     jcenter()
-	maven { url "https://repo.spring.io/milestone" }
+    maven { url "https://repo.spring.io/milestone" }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor" // for @ConfigurationProperties, make sure compileJava.dependsOn(processResources)
 
     implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
     implementation 'org.springframework.amqp:spring-rabbit'
 
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
-	testImplementation('org.springframework.cloud:spring-cloud-stream-test-support') // messaging test support for spring-cloud-stream
-	testImplementation('org.springframework.security:spring-security-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.springframework.cloud:spring-cloud-stream-test-support') // messaging test support for spring-cloud-stream
+    testImplementation('org.springframework.security:spring-security-test')
+}
+
+springBoot {
+    mainClassName = "com.example.demo.DemoApplication"
 }
 
 docker {
     springBootApplication {
-        baseImage = 'openjdk:8-alpine'
-        ports = [8080]
-        tag = project.ext.dockerhubUser + 'funke' + project.name +':' + project.versionBase
+        //baseImage = 'openjdk:8-alpine'
+        baseImage = 'openjdk:11-jre-slim'
+        ports = ["${project.ext.getSpringAppconfig('server.port')}"]
+        tag = project.ext.dockerTag
         registryCredentials {
-            url = 'https://index.docker.io/v1/'
-            username = project.ext.dockerhubUser
+            url = project.ext.dockerRegistryUrl
+            username = project.ext.dockerRegistryUser
             password = System.env.DOCKERHUB_PASS
         }
     }
@@ -73,13 +86,13 @@ dockerPushImage.dependsOn(checkDockerhubPass)
 task printDockerRunCmds(group:project.group, description:"print docker run commands to console") {
     doLast {
         def dockerRunCmdsString = """
-docker network create mynetwork
+docker network create ${project.ext.dockerNetwork}
 
 # RabbitMQ
-docker run -d -p 5672:5672 -p 15672:15672 --network mynetwork --hostname my-rabbit --name some-rabbit rabbitmq:3.7.8-management-alpine
+docker run -d -p 5672:5672 -p 15672:15672 --network ${project.ext.dockerNetwork} --hostname my-rabbit --name some-rabbit rabbitmq:3.7.8-management-alpine
 
 # ${project.name}
-docker run -d -p 8081:8080                --network mynetwork --hostname eins      --name funke-${project.name} ${project.dockerhubUser}funke${project.name}:${project.versionBase}
+docker run -d -p 8081:${getSpringAppconfig('server.port')}                --network ${project.ext.dockerNetwork}  --name ${project.name} ${project.ext.dockerTag}
 
 """
         println dockerRunCmdsString
@@ -87,13 +100,25 @@ docker run -d -p 8081:8080                --network mynetwork --hostname eins   
 }
 
 dependencyManagement {
-	imports {
+    imports {
         mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    }
 }
 
-bootJar {
-    launchScript() // make the fat.jar executable (e.g. for sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp)
-}
+bootJar { launchScript() } // make the fat.jar executable (e.g. for sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp)
 
+bootRun { systemProperties = System.properties } // ensure Gradle passes command line arguments to the JVM
+
+test {
+    ignoreFailures true
+    reports.html.enabled = false
+
+    testLogging {
+        // Make sure test results are shown in Gradle output.
+        events "passed", "skipped", "failed" //, "standardOut", "standardError"
+        // Make sure output from standard out or error is shown in Gradle output.
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+}

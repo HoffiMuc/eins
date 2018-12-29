@@ -1,0 +1,117 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "group": "build",
+            "label": "gradleBuildAll",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew build -x test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": "build",
+            "label": "gradleCleanBuildAll",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew clean build -x test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": "test",
+            "label": "gradleBuildTestAll",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": "test",
+            "label": "gradleCleanBuildTestAll",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew clean build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "eins gradleBuild",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew build -x test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "eins gradleCleanBuild",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew clean build -x test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": "test",
+            "label": "eins gradleBuildTest",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+        {
+            "group": "test",
+            "label": "eins gradleCleanBuildTest",
+            "type": "shell",
+            "command": "clear && /Users/hoffmd9/tmp/dev/funkedemo/eins/gradlew clean build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "options": {
+                "cwd": "/Users/hoffmd9/tmp/dev/funkedemo/eins"
+            }
+        },
+    ]
+}
