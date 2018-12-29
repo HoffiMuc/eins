@@ -33,7 +33,7 @@ public class EinsReceiveTest {
         this.channel.einsInput().send(message);
 
         verify(einsReceive).einsReceive(anyString(), any());
-        assertEquals("Testmessage ==> premodified", einsReceive.lastMessage);
+        assertEquals("Testmessage ==> premodified", EinsReceive.lastMessage);
 
     }
 }

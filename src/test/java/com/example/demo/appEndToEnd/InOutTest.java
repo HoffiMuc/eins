@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import com.example.demo.channels.EinsProcessor;
-import com.example.demo.dto.MessageDTO;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.cloud.stream.test.binder.MessageCollector;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -31,8 +29,8 @@ public class InOutTest {
     @Autowired
     private EinsProcessor channel;
 
-    @Autowired
-    private JacksonTester<MessageDTO> json;
+    // @Autowired
+    // private JacksonTester<MessageDTO> json;
 
     @Autowired
     private MessageCollector messageCollector;
